@@ -2,15 +2,14 @@
 #include <RCSwitch.h>
 
 // configuration
-#define SENSOR_ID 2
+#define SENSOR_ID 1
 
 // pins
 #define TRANSMITTERPIN 12
 #define THERMISTORPIN A0
 
 // transmitter
-#define RESEND_TIMES 12
-#define RESEND_DELAY 5000
+#define RESEND_TIMESPAN 60000
 
 // thermistor
 #define NUMSAMPLES 10
@@ -23,6 +22,7 @@ RCSwitch transmitter = RCSwitch();
 int samples[NUMSAMPLES];
 
 void setup(void) {
+  delay(random(1000, 10000));
   Serial.begin(9600);
   analogReference(EXTERNAL);
   transmitter.enableTransmit(TRANSMITTERPIN);
@@ -62,10 +62,12 @@ void loop(void) {
   int temperature_part = (temperature * 100);
   Serial.println(sensor_part);
   Serial.println(temperature_part);
+  int resend_delay = random(4000, 20000);
+  int resend_times = RESEND_TIMESPAN / resend_delay;
   int message = sensor_part + temperature_part;
-  for (i = 0; i < RESEND_TIMES; i++) {
-    Serial.println("Sending " + String(i + 1) + "/" + String(RESEND_TIMES) + ": " + String(message));
+  for (i = 0; i < resend_times; i++) {
+    Serial.println("Sending " + String(i + 1) + "/" + String(resend_times) + ": " + String(message));
     transmitter.send(message, 24);
-    delay(RESEND_DELAY);
+    delay(resend_delay);
   }
 }
