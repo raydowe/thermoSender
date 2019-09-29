@@ -2,7 +2,7 @@
 #include <RCSwitch.h>
 
 // configuration
-#define SENSOR_ID 1
+#define SENSOR_ID 2
 
 // pins
 #define TRANSMITTERPIN 13
@@ -82,15 +82,15 @@ void loop(void) {
   Serial.println("New temperature is " + String(temperature));
 
   // transmit message
-  int sensor_part = (SENSOR_ID * 10000);
-  int temperature_part = (temperature * 100);
-  Serial.println(sensor_part);
-  Serial.println(temperature_part);
-  int resend_delay = random(4000, 20000);
-  int resend_times = RESEND_TIMESPAN / resend_delay;
-  int message = sensor_part + temperature_part;
-  int check_digit = checkDigit(message);
+  long sensor_part = (SENSOR_ID * 10000);
+  long temperature_part = (temperature * 100);
+  long resend_delay = random(4000, 20000);
+  long resend_times = RESEND_TIMESPAN / resend_delay;
+  long message = sensor_part + temperature_part;
+  long check_digit = checkDigit(message);
   message = (message * 10) + check_digit;
+  for (i = 0; i < resend_times; i++) {
+    Serial.println("Sending " + String(i + 1) + "/" + String(resend_times) + ": " + String(message));
     transmitter.send(message, 24);
     delay(resend_delay);
   }
