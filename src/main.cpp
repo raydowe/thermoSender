@@ -28,6 +28,30 @@ void setup(void) {
   transmitter.enableTransmit(TRANSMITTERPIN);
 }
 
+
+
+int checkDigit(int message) {
+  String characters = String(message);
+  int odd = 0;
+  int even = 0;
+  for (uint8_t i = 0; i < characters.length(); i++) {
+    String character = String(characters.charAt(i));
+    int digit = character.toInt();
+    if ((i + 1) % 2 == 0) {
+      even += digit;
+    } else {
+      odd += digit;
+    }
+  }
+  int total = (odd * 3) + even;
+  int remainder = total % 10;
+  int result = 10 - remainder;
+  if (result == 10) {
+    result = 0;
+  }
+  return result;
+}
+
 void loop(void) {
 
   // collect temperature samples
@@ -65,8 +89,8 @@ void loop(void) {
   int resend_delay = random(4000, 20000);
   int resend_times = RESEND_TIMESPAN / resend_delay;
   int message = sensor_part + temperature_part;
-  for (i = 0; i < resend_times; i++) {
-    Serial.println("Sending " + String(i + 1) + "/" + String(resend_times) + ": " + String(message));
+  int check_digit = checkDigit(message);
+  message = (message * 10) + check_digit;
     transmitter.send(message, 24);
     delay(resend_delay);
   }
