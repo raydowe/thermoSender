@@ -5,7 +5,7 @@
 #define SENSOR_ID 1
 
 // pins
-#define TRANSMITTERPIN 12
+#define TRANSMITTERPIN 13
 #define THERMISTORPIN A0
 
 // transmitter
